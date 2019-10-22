@@ -2,7 +2,7 @@
 using RestSharp;
 using System.Collections.Generic;
 
-namespace Laixer.Kadaster
+namespace Laixer.Kadaster.Bag
 {
     public class DesignationService : IBagService<Designation>
     {

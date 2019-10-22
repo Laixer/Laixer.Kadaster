@@ -1,4 +1,5 @@
-﻿using RestSharp;
+﻿using Laixer.Kadaster.Bag;
+using RestSharp;
 using System;
 
 namespace Laixer.Kadaster
@@ -42,7 +43,7 @@ namespace Laixer.Kadaster
                 case BagService.Designation:
                     return new DesignationService(_client);
                 case BagService.Premise:
-                    break;
+                    return new PremiseService(_client);
                 case BagService.ResidentialObject:
                     break;
                 case BagService.City:
@@ -51,7 +52,7 @@ namespace Laixer.Kadaster
                     break;
             }
 
-            throw new InvalidOperationException(); // TODO:
+            throw new InvalidOperationException();
         }
     }
 }

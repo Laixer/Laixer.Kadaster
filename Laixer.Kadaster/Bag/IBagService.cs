@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Laixer.Kadaster
+namespace Laixer.Kadaster.Bag
 {
     public interface IBagService { }
 

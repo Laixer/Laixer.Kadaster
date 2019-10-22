@@ -1,4 +1,6 @@
-﻿namespace Laixer.Kadaster
+﻿using Laixer.Kadaster.Bag;
+
+namespace Laixer.Kadaster
 {
     internal interface IKadasterRegistration<TServiceSelector>
     {

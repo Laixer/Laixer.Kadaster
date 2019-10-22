@@ -1,4 +1,4 @@
-﻿namespace Laixer.Kadaster
+﻿namespace Laixer.Kadaster.Bag
 {
     public class BagObject<T>
     {
