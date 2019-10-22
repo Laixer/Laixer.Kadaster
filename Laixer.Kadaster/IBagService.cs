@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Laixer.Kadaster
 {
-    public interface IBagService
+    public interface IBagService { }
+
+    public interface IBagService<T> : IBagService
     {
-        Task<object> GetAllAsync();
-        Task<object> GetByIdAsync(string id);
+        IEnumerable<BagObject<T>> GetAll();
+        BagObject<T> GetById(string id);
     }
 }

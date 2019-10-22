@@ -1,47 +1,16 @@
 ﻿using Laixer.Kadaster.Entities;
 using RestSharp;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Laixer.Kadaster
 {
-    public class DesignationService : IBagService
+    public class DesignationService : IBagService<Designation>
     {
         private readonly IRestClient _client;
 
         public DesignationService(IRestClient client)
         {
             _client = client;
-        }
-
-        Task<object> IBagService.GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Designation> GetAll()
-        {
-            int page = 0;
-
-            do
-            {
-                var request = new RestRequest("nummeraanduidingen");
-                request.AddParameter("page", page);
-
-                var response = _client.Get<ApplicationLanguage<DesignationList>>(request);
-                foreach (var item in response.Data._embedded.nummeraanduidingen)
-                {
-                    yield return item as Designation;
-                }
-
-                if (response.Data._embedded.nummeraanduidingen.Count == 0)
-                {
-                    yield break;
-                }
-
-                page++;
-            } while (true);
         }
 
         public class MySource
@@ -70,7 +39,34 @@ namespace Laixer.Kadaster
             public IList<HalDesignation> nummeraanduidingen { get; set; } = new List<HalDesignation>();
         }
 
-        public IEnumerable<Designation> GetAll(string postcode, int houseNumber)
+        public IEnumerable<BagObject<Designation>> GetAll()
+        {
+            int page = 0;
+
+            do
+            {
+                var request = new RestRequest("nummeraanduidingen");
+                request.AddParameter("page", page);
+
+                var response = _client.Get<ApplicationLanguage<DesignationList>>(request);
+                foreach (var item in response.Data._embedded.nummeraanduidingen)
+                {
+                    yield return new BagObject<Designation>
+                    {
+                        Value = item as Designation
+                    };
+                }
+
+                if (response.Data._embedded.nummeraanduidingen.Count == 0)
+                {
+                    yield break;
+                }
+
+                page++;
+            } while (true);
+        }
+
+        public IEnumerable<BagObject<Designation>> GetAll(string postcode, int houseNumber)
         {
             int page = 0;
 
@@ -84,7 +80,10 @@ namespace Laixer.Kadaster
                 var response = _client.Get<ApplicationLanguage<DesignationList>>(request);
                 foreach (var item in response.Data._embedded.nummeraanduidingen)
                 {
-                    yield return item as Designation;
+                    yield return new BagObject<Designation>
+                    {
+                        Value = item as Designation
+                    };
                 }
 
                 if (response.Data._embedded.nummeraanduidingen.Count == 0)
@@ -96,14 +95,17 @@ namespace Laixer.Kadaster
             } while (true);
         }
 
-        public async Task<object> GetByIdAsync(string id)
+        public BagObject<Designation> GetById(string id)
         {
             var request = new RestRequest("nummeraanduidingen/{id}");
             request.AddUrlSegment("id", id);
 
-            var response = await _client.ExecuteGetTaskAsync<Designation>(request);
+            var response = _client.Get<Designation>(request);
 
-            throw new NotImplementedException();
+            return new BagObject<Designation>
+            {
+                Value = response.Data as Designation
+            };
         }
     }
 }
