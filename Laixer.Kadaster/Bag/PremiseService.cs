@@ -7,30 +7,38 @@ namespace Laixer.Kadaster.Bag
 {
     public class PremiseService : ServiceBase<Premise>
     {
-        public PremiseService(IRestClient client)
+        private readonly IRemoteProcedure remoteProcedure;
+
+        public PremiseService(IRestClient client, IRemoteProcedure remoteProcedure)
             : base(client)
         {
+            this.remoteProcedure = remoteProcedure;
         }
 
         public class HalPremise : Premise
         {
-            public class Embedded
+            public class Embedding
             {
                 public dynamic geometrie { get; set; }
             }
 
-            public Embedded _embedded { get; set; }
-            public dynamic _links { get; set; }
+            [JsonProperty("_embedded")]
+            public Embedding Embedded { get; set; }
+
+            [JsonProperty("_links")]
+            public dynamic Links { get; set; }
         }
 
         public class PremiseList
         {
-            public IList<HalPremise> panden { get; set; } = new List<HalPremise>();
+            [JsonProperty("panden")]
+            public IList<HalPremise> Premises { get; set; } = new List<HalPremise>();
         }
 
-        public override IEnumerable<BagObject<Premise>> GetAll()
+        public override IEnumerable<BagObject<Premise>> GetAll(int limit = 0)
         {
             int page = 1;
+            int itemCounter = 0;
 
             do
             {
@@ -42,44 +50,43 @@ namespace Laixer.Kadaster.Bag
                         {
                             type = "Polygon",
                             coordinates = new double[,,]
-{{{4.3818283, 51.9497670},
-{4.4125557, 51.9485503},
-{4.4517803, 51.9715044},
-{4.4211388, 51.9935484},
-{4.3368530, 51.9736723},
-{4.3562722, 51.9442517},
-{4.3818283, 51.9497670}}}
+                            {{{4.3818283, 51.9497670},
+                            {4.4125557, 51.9485503},
+                            {4.4517803, 51.9715044},
+                            {4.4211388, 51.9935484},
+                            {4.3368530, 51.9736723},
+                            {4.3562722, 51.9442517},
+                            {4.3818283, 51.9497670}}}
                         }
                     }
                 };
 
-                var ttx = JsonConvert.SerializeObject(r);
-
-                var request = new RestRequest("panden");
-                request.AddParameter("page", page, ParameterType.QueryString);
-                //request.AddBody();
-                //request.JsonSerializer = new RestSharpJsonNetSerializer();
-
-                request.AddParameter("application/json", ttx, ParameterType.RequestBody);
+                //var ttx = JsonConvert.SerializeObject(r);
 
                 System.Console.WriteLine($"page: {page}");
 
-                var response = _client.Post<ApplicationLanguage<PremiseList>>(request);
+                var data = remoteProcedure.Execute<ApplicationLanguage<PremiseList>>($"panden?page={page}", r);
 
-                //var response = _client.Get<ApplicationLanguage<PremiseList>>(request);
-                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                //{
+                //    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
+                //    {
+                //        throw new System.Exception("Max objecten reached");
+                //    }
+                //}
+
+                foreach (var item in data._embedded.Premises)
                 {
-                    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
+                    if (limit > 0 && limit == itemCounter)
                     {
-                        throw new System.Exception("Max objecten reached");
+                        yield break;
                     }
-                }
-                foreach (var item in response.Data._embedded.panden)
-                {
+
+                    ++itemCounter;
                     yield return ItemAsBagObject(item);
                 }
 
-                if (response.Data._embedded.panden.Count == 0)
+                if (data._embedded.Premises.Count == 0)
                 {
                     yield break;
                 }
@@ -90,7 +97,7 @@ namespace Laixer.Kadaster.Bag
 
         private BagObject<Premise> ItemAsBagObject(HalPremise item)
         {
-            item.GeoJson = JsonConvert.SerializeObject(item._embedded.geometrie);
+            item.GeoJson = JsonConvert.SerializeObject(item.Embedded.geometrie);
             if (item.oorspronkelijkBouwjaar > 2100)
             {
                 item.oorspronkelijkBouwjaar = null;
@@ -108,12 +115,7 @@ namespace Laixer.Kadaster.Bag
 
         public override BagObject<Premise> GetById(BagId id)
         {
-            var request = new RestRequest("panden/{id}");
-            request.AddUrlSegment("id", id);
-
-            var response = _client.Get<HalPremise>(request);
-
-            return ItemAsBagObject(response.Data);
+            return ItemAsBagObject(remoteProcedure.Query<HalPremise>($"panden/{id}"));
         }
     }
 }
