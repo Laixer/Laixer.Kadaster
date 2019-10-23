@@ -10,7 +10,8 @@ namespace Laixer.Kadaster
     public class KadasterBag : IKadasterRegistration<BagService>
     {
         private const string baseUrl = "https://bag.basisregistraties.overheid.nl/api/v1/";
-        private readonly IRestClient _client;
+        private readonly IRestClient client = new RestClient(baseUrl);
+        private readonly IRemoteProcedure procInterface;
 
         /// <summary>
         /// Registration service configuration.
@@ -26,9 +27,8 @@ namespace Laixer.Kadaster
             Config = config;
 
             // TODO: RemoteClient provider?
-            _client = new RestClient(baseUrl);
-            _client.AddDefaultHeader("X-Api-Key", Config.ApiKey);
-            _client.AddDefaultHeader("Accept", "application/hal+json");
+            client.AddDefaultHeader("X-Api-Key", Config.ApiKey);
+            client.AddDefaultHeader("Accept", "application/hal+json");
         }
 
         /// <summary>
@@ -41,20 +41,20 @@ namespace Laixer.Kadaster
             switch (designation)
             {
                 case BagService.Designation:
-                    return new DesignationService(_client);
+                    return new DesignationService(client);
                 case BagService.Premise:
-                    return new PremiseService(_client);
+                    return new PremiseService(client, procInterface);
                 case BagService.ResidentialObject:
                     break;
                 case BagService.City:
-                    return new CityService(_client);
+                    return new CityService(client);
                 case BagService.PublicSpace:
-                    return new PublicSpaceService(_client);
+                    return new PublicSpaceService(client);
                 default:
                     break;
             }
 
-            throw new InvalidOperationException();
+            throw new InvalidOperationException(nameof(designation));
         }
     }
 }
