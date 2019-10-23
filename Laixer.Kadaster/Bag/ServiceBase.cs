@@ -13,7 +13,7 @@ namespace Laixer.Kadaster.Bag
             _client = client;
         }
 
-        public abstract IEnumerable<BagObject<TEntity>> GetAll();
+        public abstract IEnumerable<BagObject<TEntity>> GetAll(int limit = 0);
         public abstract BagObject<TEntity> GetById(BagId id);
     }
 }

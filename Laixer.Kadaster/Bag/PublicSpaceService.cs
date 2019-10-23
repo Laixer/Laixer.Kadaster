@@ -24,7 +24,7 @@ namespace Laixer.Kadaster.Bag
             public IList<HalPublicSpace> nummeraanduidingen { get; set; } = new List<HalPublicSpace>();
         }
 
-        public IEnumerable<BagObject<PublicSpace>> GetAll()
+        public IEnumerable<BagObject<PublicSpace>> GetAll(int limit = 0)
         {
             int page = 1;
 

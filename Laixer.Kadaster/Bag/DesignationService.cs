@@ -39,7 +39,7 @@ namespace Laixer.Kadaster.Bag
             public IList<HalDesignation> nummeraanduidingen { get; set; } = new List<HalDesignation>();
         }
 
-        public IEnumerable<BagObject<Designation>> GetAll()
+        public IEnumerable<BagObject<Designation>> GetAll(int limit = 0)
         {
             int page = 1;
 

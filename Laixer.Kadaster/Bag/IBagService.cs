@@ -11,7 +11,7 @@ namespace Laixer.Kadaster.Bag
         /// Return all instances of <see cref="BagObject{T}"/>.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<BagObject<TEntity>> GetAll();
+        IEnumerable<BagObject<TEntity>> GetAll(int limit = 0);
 
         /// <summary>
         /// Return a singe entity of type <typeparamref name="TEntity"/>.

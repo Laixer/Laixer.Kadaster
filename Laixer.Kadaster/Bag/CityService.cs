@@ -30,7 +30,7 @@ namespace Laixer.Kadaster.Bag
             public IList<HalCity> woonplaatsen { get; set; } = new List<HalCity>();
         }
 
-        public IEnumerable<BagObject<City>> GetAll()
+        public IEnumerable<BagObject<City>> GetAll(int limit = 0)
         {
             int page = 1;
 
