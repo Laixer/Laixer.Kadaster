@@ -5,7 +5,7 @@
     /// </summary>
     public class BagId
     {
-        private string _id;
+        private readonly string _id;
 
         /// <summary>
         /// Create new instance.
@@ -13,6 +13,8 @@
         /// <param name="id">Identifier as string.</param>
         public BagId(string id)
         {
+            // FUTURE: There are more checks that can be done on an BAG id
+
             if (id.Length != 16)
             {
                 throw new System.Exception("INVAL"); // TODO

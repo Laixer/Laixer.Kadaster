@@ -15,5 +15,7 @@ namespace Laixer.Kadaster.Bag
 
         public abstract IEnumerable<BagObject<TEntity>> GetAll(int limit = 0);
         public abstract BagObject<TEntity> GetById(BagId id);
+
+        public BagObject<TEntity> GetById(string id) => GetById(new BagId(id));
     }
 }
