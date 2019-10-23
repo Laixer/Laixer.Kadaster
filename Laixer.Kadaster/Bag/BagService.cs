@@ -1,5 +1,8 @@
 ﻿namespace Laixer.Kadaster.Bag
 {
+    /// <summary>
+    /// Services offered by bag registrar.
+    /// </summary>
     public enum BagService
     {
         /// <summary>

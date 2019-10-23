@@ -59,7 +59,7 @@ namespace Laixer.Kadaster.Bag
             } while (true);
         }
 
-        public BagObject<City> GetById(string id)
+        public BagObject<City> GetById(BagId id)
         {
             var request = new RestRequest("woonplaatsen/{id}");
             request.AddUrlSegment("id", id);

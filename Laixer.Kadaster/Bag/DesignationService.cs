@@ -117,7 +117,7 @@ namespace Laixer.Kadaster.Bag
             } while (true);
         }
 
-        public BagObject<Designation> GetById(string id)
+        public BagObject<Designation> GetById(BagId id)
         {
             var request = new RestRequest("nummeraanduidingen/{id}");
             request.AddUrlSegment("id", id);

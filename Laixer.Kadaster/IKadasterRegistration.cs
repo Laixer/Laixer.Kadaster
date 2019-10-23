@@ -2,6 +2,10 @@
 
 namespace Laixer.Kadaster
 {
+    /// <summary>
+    /// Kadaster registration.
+    /// </summary>
+    /// <typeparam name="TServiceSelector"></typeparam>
     internal interface IKadasterRegistration<TServiceSelector>
     {
         /// <summary>

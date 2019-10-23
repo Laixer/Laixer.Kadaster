@@ -5,13 +5,11 @@ using System.Collections.Generic;
 
 namespace Laixer.Kadaster.Bag
 {
-    public class PremiseService : IBagService<Premise>
+    public class PremiseService : ServiceBase<Premise>
     {
-        private readonly IRestClient _client;
-
         public PremiseService(IRestClient client)
+            : base(client)
         {
-            _client = client;
         }
 
         public class HalPremise : Premise
@@ -30,7 +28,7 @@ namespace Laixer.Kadaster.Bag
             public IList<HalPremise> panden { get; set; } = new List<HalPremise>();
         }
 
-        public IEnumerable<BagObject<Premise>> GetAll()
+        public override IEnumerable<BagObject<Premise>> GetAll()
         {
             int page = 1;
 
@@ -78,20 +76,7 @@ namespace Laixer.Kadaster.Bag
                 }
                 foreach (var item in response.Data._embedded.panden)
                 {
-                    item.GeoJson = JsonConvert.SerializeObject(item._embedded.geometrie);
-                    if (item.oorspronkelijkBouwjaar > 2100)
-                    {
-                        item.oorspronkelijkBouwjaar = null;
-                    }
-                    else if (item.oorspronkelijkBouwjaar == 0)
-                    {
-                        item.oorspronkelijkBouwjaar = null;
-                    }
-
-                    yield return new BagObject<Premise>
-                    {
-                        Value = item as Premise
-                    };
+                    yield return ItemAsBagObject(item);
                 }
 
                 if (response.Data._embedded.panden.Count == 0)
@@ -103,17 +88,14 @@ namespace Laixer.Kadaster.Bag
             } while (true);
         }
 
-        public BagObject<Premise> GetById(string id)
+        private BagObject<Premise> ItemAsBagObject(HalPremise item)
         {
-            var request = new RestRequest("panden/{id}");
-            request.AddUrlSegment("id", id);
-
-            var response = _client.Get<HalPremise>(request);
-
-            var item = response.Data;
-
-            item.GeoJson = JsonConvert.SerializeObject(response.Data._embedded.geometrie);
+            item.GeoJson = JsonConvert.SerializeObject(item._embedded.geometrie);
             if (item.oorspronkelijkBouwjaar > 2100)
+            {
+                item.oorspronkelijkBouwjaar = null;
+            }
+            else if (item.oorspronkelijkBouwjaar == 0)
             {
                 item.oorspronkelijkBouwjaar = null;
             }
@@ -122,6 +104,16 @@ namespace Laixer.Kadaster.Bag
             {
                 Value = item as Premise
             };
+        }
+
+        public override BagObject<Premise> GetById(BagId id)
+        {
+            var request = new RestRequest("panden/{id}");
+            request.AddUrlSegment("id", id);
+
+            var response = _client.Get<HalPremise>(request);
+
+            return ItemAsBagObject(response.Data);
         }
     }
 }
