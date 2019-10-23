@@ -1,4 +1,5 @@
 ﻿using Laixer.Kadaster.Bag;
+using Laixer.Kadaster.Internal;
 using RestSharp;
 using System;
 
@@ -25,6 +26,11 @@ namespace Laixer.Kadaster
         public KadasterBag(KadasterConfig config)
         {
             Config = config;
+
+            procInterface = new BagRemoteProcedure(baseUrl, Config.ApiKey)
+            {
+                JsonSerialzer = new JsonNetSerializer()
+            };
 
             // TODO: RemoteClient provider?
             client.AddDefaultHeader("X-Api-Key", Config.ApiKey);
