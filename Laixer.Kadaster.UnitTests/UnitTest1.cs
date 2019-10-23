@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Laixer.Kadaster.UnitTests
@@ -6,7 +5,27 @@ namespace Laixer.Kadaster.UnitTests
     public class UnitTest1
     {
         [Fact]
-        public async Task Test1()
+        public void Test1()
+        {
+            var config = new KadasterConfig
+            {
+                ApiKey = "SOMETESTKEY"
+            };
+
+            var bag = new KadasterBag(config);
+            Assert.Equal(config, bag.Config);
+        }
+
+        [Fact]
+        public void Test2()
+        {
+            var bag = new Entities.BagId("1001200000066331");
+
+            Assert.Equal("1001200000066331", bag.ToString());
+        }
+
+        [Fact]
+        public void Test6()
         {
             var config = new KadasterConfig
             {
@@ -14,23 +33,27 @@ namespace Laixer.Kadaster.UnitTests
             };
 
             var bag = new KadasterBag(config);
-            var r = bag.Config == config;
 
-            var dservice = bag.DesignationService();
-            foreach (var item in dservice.GetAll())
-            {
+            //var dservice = bag.DesignationService();
+            //foreach (var item in dservice.GetAll())
+            //{
 
-            }
+            //}
+
             //await dservice.GetAllAsync(postcode: "3123EB", houseNumber: 43);
-            //await dservice.GetByIdAsync("0005200000035461");
+            //dservice.GetById("0005200000035461");
             //await dservice.GetByIdAsync("0005200000035461").AddressObject();
             //await dservice.GetByIdAsync("0005200000035461").PublicSpace();
 
 
+            var pservice = bag.PremiseService();
+            foreach (var item in pservice.GetAll(25))
+            {
+                //
+            }
 
-            //var pservice = bag.GetService(BagService.Premise);
-            //await pservice.GetAllAsync();
-            //await pservice.GetByIdAsync("0003100000118018");
+            //var obj = pservice.GetById(new Entities.BagId("0003100000118018"));
+
             //await pservice.GetByIdAsync("0003100000118018").ResidentialObject();
 
 
