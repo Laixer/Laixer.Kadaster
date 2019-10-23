@@ -1,4 +1,5 @@
 ﻿using Laixer.Kadaster.Entities;
+using Newtonsoft.Json;
 using RestSharp;
 using System.Collections.Generic;
 
@@ -13,14 +14,25 @@ namespace Laixer.Kadaster.Bag
             _client = client;
         }
 
+        public class HalCity : City
+        {
+            public class Embedded
+            {
+                public dynamic geometrie { get; set; }
+            }
+
+            public Embedded _embedded { get; set; }
+            public dynamic _links { get; set; }
+        }
+
         public class CityList
         {
-            public IList<City> woonplaatsen { get; set; } = new List<City>();
+            public IList<HalCity> woonplaatsen { get; set; } = new List<HalCity>();
         }
 
         public IEnumerable<BagObject<City>> GetAll()
         {
-            int page = 0;
+            int page = 1;
 
             do
             {
@@ -30,6 +42,8 @@ namespace Laixer.Kadaster.Bag
                 var response = _client.Get<ApplicationLanguage<CityList>>(request);
                 foreach (var item in response.Data._embedded.woonplaatsen)
                 {
+                    item.GeoJson = JsonConvert.SerializeObject(item._embedded.geometrie);
+
                     yield return new BagObject<City>
                     {
                         Value = item as City
@@ -41,7 +55,7 @@ namespace Laixer.Kadaster.Bag
                     yield break;
                 }
 
-                page++;
+                ++page;
             } while (true);
         }
 

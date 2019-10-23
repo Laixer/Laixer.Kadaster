@@ -1,7 +1,7 @@
 ﻿using Laixer.Kadaster.Bag;
 using System;
 
-namespace Laixer.Kadaster.Extensions
+namespace Laixer.Kadaster
 {
     /// <summary>
     /// Extensions on the kadaser bag registration.
@@ -36,6 +36,16 @@ namespace Laixer.Kadaster.Extensions
             }
 
             return bag.GetService(BagService.City) as CityService;
+        }
+
+        public static PublicSpaceService PublicSpaceService(this KadasterBag bag)
+        {
+            if (bag == null)
+            {
+                throw new ArgumentNullException(nameof(bag));
+            }
+
+            return bag.GetService(BagService.PublicSpace) as PublicSpaceService;
         }
     }
 }

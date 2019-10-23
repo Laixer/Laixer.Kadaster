@@ -48,6 +48,8 @@ namespace Laixer.Kadaster
                     break;
                 case BagService.City:
                     return new CityService(_client);
+                case BagService.PublicSpace:
+                    return new PublicSpaceService(_client);
                 default:
                     break;
             }

@@ -41,14 +41,24 @@ namespace Laixer.Kadaster.Bag
 
         public IEnumerable<BagObject<Designation>> GetAll()
         {
-            int page = 0;
+            int page = 1;
 
             do
             {
                 var request = new RestRequest("nummeraanduidingen");
                 request.AddParameter("page", page);
+                System.Console.WriteLine($"page: {page}");
 
                 var response = _client.Get<ApplicationLanguage<DesignationList>>(request);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
+                    {
+                        throw new System.Exception("Max objecten reached");
+                    }
+                }
+
                 foreach (var item in response.Data._embedded.nummeraanduidingen)
                 {
                     yield return new BagObject<Designation>
@@ -66,18 +76,30 @@ namespace Laixer.Kadaster.Bag
             } while (true);
         }
 
-        public IEnumerable<BagObject<Designation>> GetAll(string postcode, int houseNumber)
+        public IEnumerable<BagObject<Designation>> GetAll(string postcode, int? houseNumber = null)
         {
-            int page = 0;
+            int page = 1;
 
             do
             {
                 var request = new RestRequest("nummeraanduidingen");
                 request.AddParameter("postcode", postcode);
-                request.AddParameter("huisnummer", houseNumber);
+                if (houseNumber.HasValue)
+                {
+                    request.AddParameter("huisnummer", houseNumber);
+                }
                 request.AddParameter("page", page);
 
                 var response = _client.Get<ApplicationLanguage<DesignationList>>(request);
+
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
+                    {
+                        throw new System.Exception("Max objecten reached");
+                    }
+                }
+
                 foreach (var item in response.Data._embedded.nummeraanduidingen)
                 {
                     yield return new BagObject<Designation>

@@ -16,7 +16,7 @@ namespace Laixer.Kadaster.UnitTests
             var bag = new KadasterBag(config);
             var r = bag.Config == config;
 
-            var dservice = bag.GetService(BagService.Designation) as DesignationService;
+            var dservice = bag.DesignationService();
             foreach (var item in dservice.GetAll())
             {
 
