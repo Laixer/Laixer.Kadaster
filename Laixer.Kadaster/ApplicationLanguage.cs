@@ -1,9 +1,14 @@
-﻿namespace Laixer.Kadaster
+﻿using Newtonsoft.Json;
+
+namespace Laixer.Kadaster
 {
     public class ApplicationLanguage<TEntity>
         where TEntity : class
     {
-        public dynamic _links { get; set; }
-        public TEntity _embedded { get; set; }
+        [JsonProperty("_links")]
+        public dynamic Links { get; set; }
+
+        [JsonProperty("_embedded")]
+        public TEntity Embed { get; set; }
     }
 }

@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Laixer.Kadaster.Bag
 {
+    /// <summary>
+    /// City service.
+    /// </summary>
     public class CityService : ServiceBase<City>
     {
         public CityService(IRemoteProcedure remoteProcedure)
@@ -29,7 +32,7 @@ namespace Laixer.Kadaster.Bag
             do
             {
                 var data = _remoteProcedure.Query<ApplicationLanguage<CityList>>($"woonplaatsen?page={page}");
-                foreach (var item in data._embedded.Cities)
+                foreach (var item in data.Embed.Cities)
                 {
                     if (limit > 0 && itemCount == limit)
                     {
@@ -40,7 +43,7 @@ namespace Laixer.Kadaster.Bag
                     yield return ItemAsBagObject(item);
                 }
 
-                if (data._embedded.Cities.Count == 0)
+                if (data.Embed.Cities.Count == 0)
                 {
                     yield break;
                 }

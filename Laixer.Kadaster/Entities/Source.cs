@@ -1,8 +1,16 @@
-﻿namespace Laixer.Kadaster.Entities
+﻿using Newtonsoft.Json;
+
+namespace Laixer.Kadaster.Entities
 {
+    /// <summary>
+    /// Document source.
+    /// </summary>
     public class Source
     {
-        public string documentnummer { get; set; }
-        public string documentdatum { get; set; }
+        [JsonProperty("documentnummer")]
+        public string DocumentId { get; set; }
+
+        [JsonProperty("documentdatum")]
+        public string DocumentDate { get; set; }
     }
 }

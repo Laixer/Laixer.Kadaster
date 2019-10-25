@@ -1,5 +1,6 @@
 ﻿using Laixer.Kadaster.Bag;
 using Laixer.Kadaster.Entities;
+using System;
 
 namespace Laixer.Kadaster
 {
@@ -13,6 +14,16 @@ namespace Laixer.Kadaster
         /// <returns><see cref="BagObject<PublicSpace>"/>.</returns>
         public static BagObject<PublicSpace> PublicSpace(this BagObject<Designation> bagObject, KadasterBag bag)
         {
+            if (bagObject == null)
+            {
+                throw new ArgumentNullException(nameof(bagObject));
+            }
+
+            if (bag == null)
+            {
+                throw new ArgumentNullException(nameof(bag));
+            }
+
             var publicSpaceService = bag.PublicSpaceService();
             var uri = bagObject.Value.Links.PublicSpace.Href;
             var id = uri.Segments[4]; // TODO: This may not always be true;
@@ -27,6 +38,16 @@ namespace Laixer.Kadaster
         /// <returns><see cref="BagObject<City>"/>.</returns>
         public static BagObject<City> City(this BagObject<PublicSpace> bagObject, KadasterBag bag)
         {
+            if (bagObject == null)
+            {
+                throw new ArgumentNullException(nameof(bagObject));
+            }
+
+            if (bag == null)
+            {
+                throw new ArgumentNullException(nameof(bag));
+            }
+
             var cityService = bag.CityService();
             var uri = bagObject.Value.Links.City.Href;
             var id = uri.Segments[4]; // TODO: This may not always be true;

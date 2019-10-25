@@ -1,7 +1,14 @@
 ﻿namespace Laixer.Kadaster.Bag
 {
-    public class BagObject<T>
+    /// <summary>
+    /// Bag object for entity.
+    /// </summary>
+    /// <typeparam name="TEntity">Entity.</typeparam>
+    public class BagObject<TEntity>
     {
-        public T Value { get; set; }
+        /// <summary>
+        /// Value of <typeparamref name="TEntity"/>.
+        /// </summary>
+        public TEntity Value { get; set; }
     }
 }

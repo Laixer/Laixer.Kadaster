@@ -4,6 +4,9 @@ using System.Collections.Generic;
 
 namespace Laixer.Kadaster.Bag
 {
+    /// <summary>
+    /// Premise service.
+    /// </summary>
     public class PremiseService : ServiceBase<Premise>
     {
         public PremiseService(IRemoteProcedure remoteProcedure)
@@ -48,7 +51,7 @@ namespace Laixer.Kadaster.Bag
                 };
 
                 var data = _remoteProcedure.Execute<ApplicationLanguage<PremiseList>>($"panden?page={page}", r);
-                foreach (var item in data._embedded.Premises)
+                foreach (var item in data.Embed.Premises)
                 {
                     if (limit > 0 && limit == itemCounter)
                     {
@@ -59,7 +62,7 @@ namespace Laixer.Kadaster.Bag
                     yield return ItemAsBagObject(item);
                 }
 
-                if (data._embedded.Premises.Count == 0)
+                if (data.Embed.Premises.Count == 0)
                 {
                     yield break;
                 }
