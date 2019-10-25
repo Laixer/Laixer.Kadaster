@@ -1,4 +1,5 @@
-﻿using RestSharp;
+﻿using Laixer.Kadaster.Exception;
+using RestSharp;
 using System;
 
 namespace Laixer.Kadaster.Internal
@@ -7,8 +8,22 @@ namespace Laixer.Kadaster.Internal
     {
         private readonly IRestClient client;
 
+        private class ErrorMessage
+        {
+            public int code { get; set; }
+            public string message { get; set; }
+        }
+
+        /// <summary>
+        /// Json serializer.
+        /// </summary>
         public IJsonSerialzer JsonSerialzer { get; set; }
 
+        /// <summary>
+        /// Create new instance.
+        /// </summary>
+        /// <param name="baseUrl">Base endoint.</param>
+        /// <param name="apiKey">Authorization key.</param>
         public BagRemoteProcedure(string baseUrl, string apiKey)
         {
             client = new RestClient(baseUrl);
@@ -24,18 +39,14 @@ namespace Laixer.Kadaster.Internal
             }
 
             var response = client.Execute(new RestRequest(uri), Method.GET);
+            if (response.IsSuccessful)
+            {
+                return response.Content;
+            }
 
-            // TODO: Handle response
+            var error = JsonSerialzer.DeserializeObject<ErrorMessage>(response.Content);
 
-            //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            //{
-            //    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
-            //    {
-            //        throw new Exception("Max objecten reached");
-            //    }
-            //}
-
-            return response.Content;
+            throw new RemoteProcedureException($"Error: {error.code}; Message: {error.message}");
         }
 
         public TReturn Query<TReturn>(string uri)
@@ -72,19 +83,16 @@ namespace Laixer.Kadaster.Internal
 
             var request = new RestRequest(uri);
             request.AddParameter("application/json", JsonSerialzer.SerializeObject(obj), ParameterType.RequestBody);
+
             var response = client.Execute(request, Method.POST);
+            if (response.IsSuccessful)
+            {
+                return response.Content;
+            }
 
-            // TODO: Handle response
+            var error = JsonSerialzer.DeserializeObject<ErrorMessage>(response.Content);
 
-            //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-            //{
-            //    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
-            //    {
-            //        throw new Exception("Max objecten reached");
-            //    }
-            //}
-
-            return response.Content;
+            throw new RemoteProcedureException($"Error: {error.code}; Message: {error.message}");
         }
 
         public TReturn Execute<TReturn>(string uri, object obj)
