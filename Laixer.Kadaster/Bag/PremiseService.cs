@@ -1,18 +1,14 @@
 ﻿using Laixer.Kadaster.Entities;
 using Newtonsoft.Json;
-using RestSharp;
 using System.Collections.Generic;
 
 namespace Laixer.Kadaster.Bag
 {
     public class PremiseService : ServiceBase<Premise>
     {
-        private readonly IRemoteProcedure remoteProcedure;
-
-        public PremiseService(IRestClient client, IRemoteProcedure remoteProcedure)
-            : base(client)
+        public PremiseService(IRemoteProcedure remoteProcedure)
+            : base(remoteProcedure)
         {
-            this.remoteProcedure = remoteProcedure;
         }
 
         private class PremiseList
@@ -21,6 +17,10 @@ namespace Laixer.Kadaster.Bag
             public IList<Premise> Premises { get; set; } = new List<Premise>();
         }
 
+        /// <summary>
+        /// Return all instances of type <see cref="Premise"/>.
+        /// </summary>
+        /// <returns>Instance of <see cref="BagObject{T}"/>.</returns>
         public override IEnumerable<BagObject<Premise>> GetAll(int limit = 0)
         {
             int page = 1;
@@ -47,7 +47,7 @@ namespace Laixer.Kadaster.Bag
                     }
                 };
 
-                var data = remoteProcedure.Execute<ApplicationLanguage<PremiseList>>($"panden?page={page}", r);
+                var data = _remoteProcedure.Execute<ApplicationLanguage<PremiseList>>($"panden?page={page}", r);
                 foreach (var item in data._embedded.Premises)
                 {
                     if (limit > 0 && limit == itemCounter)
@@ -87,9 +87,11 @@ namespace Laixer.Kadaster.Bag
             };
         }
 
-        public override BagObject<Premise> GetById(BagId id)
-        {
-            return ItemAsBagObject(remoteProcedure.Query<Premise>($"panden/{id}"));
-        }
+        /// <summary>
+        /// Return a singe entity of type <see cref="Premise"/>.
+        /// </summary>
+        /// <param name="id">Entity identifier.</param>
+        /// <returns>Instance of <see cref="BagObject{T}"/>.</returns
+        public override BagObject<Premise> GetById(BagId id) => ItemAsBagObject(_remoteProcedure.Query<Premise>($"panden/{id}"));
     }
 }

@@ -6,11 +6,11 @@ namespace Laixer.Kadaster.Bag
 {
     public abstract class ServiceBase<TEntity> : IBagService<TEntity>
     {
-        protected readonly IRestClient _client;
+        protected readonly IRemoteProcedure _remoteProcedure;
 
-        public ServiceBase(IRestClient client)
+        public ServiceBase(IRemoteProcedure remoteProcedure)
         {
-            _client = client;
+            _remoteProcedure = remoteProcedure;
         }
 
         public abstract IEnumerable<BagObject<TEntity>> GetAll(int limit = 0);

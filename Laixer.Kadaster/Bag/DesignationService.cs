@@ -1,17 +1,14 @@
 ﻿using Laixer.Kadaster.Entities;
 using Newtonsoft.Json;
-using RestSharp;
 using System.Collections.Generic;
 
 namespace Laixer.Kadaster.Bag
 {
-    public class DesignationService : IBagService<Designation>
+    public class DesignationService : ServiceBase<Designation>
     {
-        private readonly IRemoteProcedure remoteProcedure;
-
-        public DesignationService(IRestClient client, IRemoteProcedure remoteProcedure)
+        public DesignationService(IRemoteProcedure remoteProcedure)
+            : base(remoteProcedure)
         {
-            this.remoteProcedure = remoteProcedure;
         }
 
         private class DesignationList
@@ -20,14 +17,18 @@ namespace Laixer.Kadaster.Bag
             public IList<Designation> Designations { get; set; } = new List<Designation>();
         }
 
-        public IEnumerable<BagObject<Designation>> GetAll(int limit = 0)
+        /// <summary>
+        /// Return all instances of type <see cref="Designation"/>.
+        /// </summary>
+        /// <returns>Instance of <see cref="BagObject{T}"/>.</returns>
+        public override IEnumerable<BagObject<Designation>> GetAll(int limit = 0)
         {
             int page = 1;
             int itemCount = 0;
 
             do
             {
-                var data = remoteProcedure.Query<ApplicationLanguage<DesignationList>>($"nummeraanduidingen?page={page}");
+                var data = _remoteProcedure.Query<ApplicationLanguage<DesignationList>>($"nummeraanduidingen?page={page}");
                 foreach (var item in data._embedded.Designations)
                 {
                     if (limit > 0 && itemCount == limit)
@@ -55,7 +56,7 @@ namespace Laixer.Kadaster.Bag
 
             do
             {
-                var data = remoteProcedure.Query<ApplicationLanguage<DesignationList>>(houseNumber != null
+                var data = _remoteProcedure.Query<ApplicationLanguage<DesignationList>>(houseNumber != null
                     ? $"nummeraanduidingen?postcode={postcode}&huisnummer={houseNumber}&page={page}"
                     : $"nummeraanduidingen?postcode={postcode}&page={page}");
 
@@ -87,9 +88,11 @@ namespace Laixer.Kadaster.Bag
             };
         }
 
-        public BagObject<Designation> GetById(BagId id)
-        {
-            return ItemAsBagObject(remoteProcedure.Query<Designation>($"nummeraanduidingen/{id}"));
-        }
+        /// <summary>
+        /// Return a singe entity of type <see cref="Designation"/>.
+        /// </summary>
+        /// <param name="id">Entity identifier.</param>
+        /// <returns>Instance of <see cref="BagObject{T}"/>.</returns
+        public override BagObject<Designation> GetById(BagId id) => ItemAsBagObject(_remoteProcedure.Query<Designation>($"nummeraanduidingen/{id}"));
     }
 }

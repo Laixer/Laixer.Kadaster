@@ -3,14 +3,21 @@ using System.Collections.Generic;
 
 namespace Laixer.Kadaster.Bag
 {
+    /// <summary>
+    /// Toplevel bag service interface.
+    /// </summary>
     public interface IBagService { }
 
+    /// <summary>
+    /// Bag service interface.
+    /// </summary>
+    /// <typeparam name="TEntity">Entity to return.</typeparam>
     public interface IBagService<TEntity> : IBagService
     {
         /// <summary>
-        /// Return all instances of <see cref="BagObject{T}"/>.
+        /// Return all instances of type <typeparamref name="TEntity"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Instance of <see cref="BagObject{T}"/>.</returns>
         IEnumerable<BagObject<TEntity>> GetAll(int limit = 0);
 
         /// <summary>

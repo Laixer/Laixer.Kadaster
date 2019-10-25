@@ -1,10 +1,24 @@
-﻿namespace Laixer.Kadaster.Entities
+﻿using Newtonsoft.Json;
+
+namespace Laixer.Kadaster.Entities
 {
+    /// <summary>
+    /// City entity.
+    /// </summary>
     public class City
     {
-        public string identificatiecode { get; set; }
-        public string naam { get; set; }
-        public string status { get; set; }
+        [JsonProperty("identificatiecode")]
+        public string Id { get; set; }
+
+        [JsonProperty("naam")]
+        public string Name { get; set; }
+
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        [JsonProperty("_embedded")]
+        public EmbeddingGeometry Embed { get; set; }
+
         public string GeoJson { get; set; }
     }
 }

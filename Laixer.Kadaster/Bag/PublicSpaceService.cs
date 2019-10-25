@@ -1,32 +1,35 @@
 ﻿using Laixer.Kadaster.Entities;
-using RestSharp;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace Laixer.Kadaster.Bag
 {
-    public class PublicSpaceService : IBagService<PublicSpace>
+    public class PublicSpaceService : ServiceBase<PublicSpace>
     {
-        private readonly IRemoteProcedure remoteProcedure;
-
-        public PublicSpaceService(IRestClient client, IRemoteProcedure remoteProcedure)
+        public PublicSpaceService(IRemoteProcedure remoteProcedure)
+            : base(remoteProcedure)
         {
-            this.remoteProcedure = remoteProcedure;
         }
 
         private class PublicSpaceList
         {
-            public IList<PublicSpace> openbareRuimtes { get; set; } = new List<PublicSpace>();
+            [JsonProperty("openbareRuimtes")]
+            public IList<PublicSpace> PublicSpaces { get; set; } = new List<PublicSpace>();
         }
 
-        public IEnumerable<BagObject<PublicSpace>> GetAll(int limit = 0)
+        /// <summary>
+        /// Return all instances of type <see cref="PublicSpace"/>.
+        /// </summary>
+        /// <returns>Instance of <see cref="BagObject{T}"/>.</returns>
+        public override IEnumerable<BagObject<PublicSpace>> GetAll(int limit = 0)
         {
             int page = 1;
             int itemCount = 0;
 
             do
             {
-                var data = remoteProcedure.Query<ApplicationLanguage<PublicSpaceList>>($"openbare-ruimtes?page={page}");
-                foreach (var item in data._embedded.openbareRuimtes)
+                var data = _remoteProcedure.Query<ApplicationLanguage<PublicSpaceList>>($"openbare-ruimtes?page={page}");
+                foreach (var item in data._embedded.PublicSpaces)
                 {
                     if (limit > 0 && itemCount == limit)
                     {
@@ -37,7 +40,7 @@ namespace Laixer.Kadaster.Bag
                     yield return ItemAsBagObject(item);
                 }
 
-                if (data._embedded.openbareRuimtes.Count == 0)
+                if (data._embedded.PublicSpaces.Count == 0)
                 {
                     yield break;
                 }
@@ -54,9 +57,11 @@ namespace Laixer.Kadaster.Bag
             };
         }
 
-        public BagObject<PublicSpace> GetById(BagId id)
-        {
-            return ItemAsBagObject(remoteProcedure.Query<PublicSpace>($"openbare-ruimtes/{id}"));
-        }
+        /// <summary>
+        /// Return a singe entity of type <see cref="PublicSpace"/>.
+        /// </summary>
+        /// <param name="id">Entity identifier.</param>
+        /// <returns>Instance of <see cref="BagObject{T}"/>.</returns
+        public override BagObject<PublicSpace> GetById(BagId id) => ItemAsBagObject(_remoteProcedure.Query<PublicSpace>($"openbare-ruimtes/{id}"));
     }
 }

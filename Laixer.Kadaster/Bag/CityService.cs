@@ -1,56 +1,46 @@
 ﻿using Laixer.Kadaster.Entities;
 using Newtonsoft.Json;
-using RestSharp;
 using System.Collections.Generic;
 
 namespace Laixer.Kadaster.Bag
 {
-    public class CityService : IBagService<City>
+    public class CityService : ServiceBase<City>
     {
-        private readonly IRestClient _client;
-
-        public CityService(IRestClient client)
+        public CityService(IRemoteProcedure remoteProcedure)
+            : base(remoteProcedure)
         {
-            _client = client;
         }
 
-        public class HalCity : City
+        private class CityList
         {
-            public class Embedded
-            {
-                public dynamic geometrie { get; set; }
-            }
-
-            public Embedded _embedded { get; set; }
-            public dynamic _links { get; set; }
+            [JsonProperty("woonplaatsen")]
+            public IList<City> Cities { get; set; } = new List<City>();
         }
 
-        public class CityList
-        {
-            public IList<HalCity> woonplaatsen { get; set; } = new List<HalCity>();
-        }
-
-        public IEnumerable<BagObject<City>> GetAll(int limit = 0)
+        /// <summary>
+        /// Return all instances of type <see cref="City"/>.
+        /// </summary>
+        /// <returns>Instance of <see cref="BagObject{T}"/>.</returns>
+        public override IEnumerable<BagObject<City>> GetAll(int limit = 0)
         {
             int page = 1;
+            int itemCount = 0;
 
             do
             {
-                var request = new RestRequest("woonplaatsen");
-                request.AddParameter("page", page);
-
-                var response = _client.Get<ApplicationLanguage<CityList>>(request);
-                foreach (var item in response.Data._embedded.woonplaatsen)
+                var data = _remoteProcedure.Query<ApplicationLanguage<CityList>>($"woonplaatsen?page={page}");
+                foreach (var item in data._embedded.Cities)
                 {
-                    item.GeoJson = JsonConvert.SerializeObject(item._embedded.geometrie);
-
-                    yield return new BagObject<City>
+                    if (limit > 0 && itemCount == limit)
                     {
-                        Value = item as City
-                    };
+                        yield break;
+                    }
+
+                    ++itemCount;
+                    yield return ItemAsBagObject(item);
                 }
 
-                if (response.Data._embedded.woonplaatsen.Count == 0)
+                if (data._embedded.Cities.Count == 0)
                 {
                     yield break;
                 }
@@ -59,17 +49,21 @@ namespace Laixer.Kadaster.Bag
             } while (true);
         }
 
-        public BagObject<City> GetById(BagId id)
+        private BagObject<City> ItemAsBagObject(City item)
         {
-            var request = new RestRequest("woonplaatsen/{id}");
-            request.AddUrlSegment("id", id);
-
-            var response = _client.Get<City>(request);
+            item.GeoJson = JsonConvert.SerializeObject(item.Embed.Geometry);
 
             return new BagObject<City>
             {
-                Value = response.Data as City
+                Value = item
             };
         }
+
+        /// <summary>
+        /// Return a singe entity of type <see cref="City"/>.
+        /// </summary>
+        /// <param name="id">Entity identifier.</param>
+        /// <returns>Instance of <see cref="BagObject{T}"/>.</returns
+        public override BagObject<City> GetById(BagId id) => ItemAsBagObject(_remoteProcedure.Query<City>($"woonplaatsen/{id}"));
     }
 }
