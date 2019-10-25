@@ -53,5 +53,25 @@ namespace Laixer.Kadaster
             var id = uri.Segments[4]; // TODO: This may not always be true;
             return cityService.GetById(new BagId(id));
         }
+
+#if _X
+        public static BagObject<City> ResidentialObject(this BagObject<Premise> bagObject, KadasterBag bag)
+        {
+            if (bagObject == null)
+            {
+                throw new ArgumentNullException(nameof(bagObject));
+            }
+
+            if (bag == null)
+            {
+                throw new ArgumentNullException(nameof(bag));
+            }
+
+            var residentialObjectService = bag.ResidentialObject();
+            var uri = bagObject.Value.Links.ResidentialObject.Href;
+            var id = uri.Segments[4]; // TODO: This may not always be true;
+            return residentialObjectService.GetById(new BagId(id));
+        }
+#endif
     }
 }
