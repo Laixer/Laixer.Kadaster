@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Laixer.Kadaster.Entities
+namespace Laixer.Kadaster.Entities.Embed
 {
     public class Embedding
     {

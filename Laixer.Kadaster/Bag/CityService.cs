@@ -54,8 +54,6 @@ namespace Laixer.Kadaster.Bag
 
         private BagObject<City> ItemAsBagObject(City item)
         {
-            item.GeoJson = JsonConvert.SerializeObject(item.Embed.Geometry);
-
             return new BagObject<City>
             {
                 Value = item

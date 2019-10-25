@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 
-namespace Laixer.Kadaster.Entities
+namespace Laixer.Kadaster.Entities.Embed
 {
     public class EmbeddingGeometry : Embedding
     {
         [JsonProperty("geometrie")]
-        public dynamic Geometry { get; set; }
+        public Geometry Geometry { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Laixer.Kadaster.Entities.Embed;
+using Newtonsoft.Json;
 
 namespace Laixer.Kadaster.Entities
 {

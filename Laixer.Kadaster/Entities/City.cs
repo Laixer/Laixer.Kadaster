@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Laixer.Kadaster.Entities.Embed;
+using Newtonsoft.Json;
 
 namespace Laixer.Kadaster.Entities
 {
@@ -27,7 +28,5 @@ namespace Laixer.Kadaster.Entities
 
         [JsonProperty("_embedded")]
         public EmbeddingGeometry Embed { get; set; }
-
-        public string GeoJson { get; set; }
     }
 }

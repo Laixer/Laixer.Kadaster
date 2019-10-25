@@ -1,7 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using Laixer.Kadaster.Entities.Embed;
+using Newtonsoft.Json;
 
 namespace Laixer.Kadaster.Entities
 {
+    /// <summary>
+    /// Occurrence entity.
+    /// </summary>
     public class Occurrence
     {
         [JsonProperty("beginGeldigheid")]
@@ -21,5 +25,8 @@ namespace Laixer.Kadaster.Entities
 
         [JsonProperty("geconstateerd")]
         public bool Established { get; set; }
+
+        [JsonProperty("_embedded")]
+        public EmbeddingSource Embed { get; set; }
     }
 }

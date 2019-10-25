@@ -73,8 +73,6 @@ namespace Laixer.Kadaster.Bag
 
         private BagObject<Premise> ItemAsBagObject(Premise item)
         {
-            item.GeoJson = JsonConvert.SerializeObject(item.Embed.Geometry);
-
             if (item.BuiltYear > 2100)
             {
                 item.BuiltYear = null;
