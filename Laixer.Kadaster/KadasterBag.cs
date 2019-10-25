@@ -1,6 +1,5 @@
 ﻿using Laixer.Kadaster.Bag;
 using Laixer.Kadaster.Internal;
-using RestSharp;
 using System;
 
 namespace Laixer.Kadaster
@@ -23,13 +22,22 @@ namespace Laixer.Kadaster
         /// </summary>
         /// <param name="config">See <see cref="KadasterConfig"/>.</param>
         public KadasterBag(KadasterConfig config)
-        {
-            Config = config;
-
-            procInterface = new BagRemoteProcedure(baseUrl, Config.ApiKey)
+            : this(config, new BagRemoteProcedure(baseUrl, config.AuthKey)
             {
                 JsonSerialzer = new JsonNetSerializer()
-            };
+            })
+        {
+        }
+
+        /// <summary>
+        /// Create new instance.
+        /// </summary>
+        /// <param name="config">See <see cref="KadasterConfig"/>.</param>
+        /// <param name="procedure">Instance of <see cref="IRemoteProcedure"/>.</param>
+        public KadasterBag(KadasterConfig config, IRemoteProcedure procedure)
+        {
+            Config = config;
+            procInterface = procedure;
         }
 
         /// <summary>

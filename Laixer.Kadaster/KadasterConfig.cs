@@ -6,8 +6,13 @@
     public sealed class KadasterConfig
     {
         /// <summary>
-        /// API Access key.
+        /// Authorization access key.
         /// </summary>
-        public string ApiKey { get; set; }
+        public string AuthKey { get; set; }
+
+        /// <summary>
+        /// Endpoint version.
+        /// </summary>
+        public int EndpointVersion { get; set; } = 1;
     }
 }

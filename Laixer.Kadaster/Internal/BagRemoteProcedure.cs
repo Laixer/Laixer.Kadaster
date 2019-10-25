@@ -4,6 +4,9 @@ using System;
 
 namespace Laixer.Kadaster.Internal
 {
+    /// <summary>
+    /// Remote procedure for BAG endpoints.
+    /// </summary>
     internal class BagRemoteProcedure : IRemoteProcedure
     {
         private readonly IRestClient client;
@@ -31,14 +34,15 @@ namespace Laixer.Kadaster.Internal
             client.AddDefaultHeader("Accept", "application/hal+json");
         }
 
-        public string Query(string uri)
+        /// <summary>
+        /// Execute the call to endpoint and handle errors.
+        /// </summary>
+        /// <param name="request"><see cref="IRestRequest"/>.</param>
+        /// <param name="method"><see cref="Method"/>.</param>
+        /// <returns>Contents of procedure as string.</returns>
+        protected string PerformCall(IRestRequest request, Method method)
         {
-            if (string.IsNullOrEmpty(uri))
-            {
-                throw new ArgumentNullException(nameof(uri));
-            }
-
-            var response = client.Execute(new RestRequest(uri), Method.GET);
+            var response = client.Execute(request, method);
             if (response.IsSuccessful)
             {
                 return response.Content;
@@ -47,6 +51,16 @@ namespace Laixer.Kadaster.Internal
             var error = JsonSerialzer.DeserializeObject<ErrorMessage>(response.Content);
 
             throw new RemoteProcedureException($"Error: {error.code}; Message: {error.message}");
+        }
+
+        public string Query(string uri)
+        {
+            if (string.IsNullOrEmpty(uri))
+            {
+                throw new ArgumentNullException(nameof(uri));
+            }
+
+            return PerformCall(new RestRequest(uri), Method.GET);
         }
 
         public TReturn Query<TReturn>(string uri)
@@ -84,15 +98,7 @@ namespace Laixer.Kadaster.Internal
             var request = new RestRequest(uri);
             request.AddParameter("application/json", JsonSerialzer.SerializeObject(obj), ParameterType.RequestBody);
 
-            var response = client.Execute(request, Method.POST);
-            if (response.IsSuccessful)
-            {
-                return response.Content;
-            }
-
-            var error = JsonSerialzer.DeserializeObject<ErrorMessage>(response.Content);
-
-            throw new RemoteProcedureException($"Error: {error.code}; Message: {error.message}");
+            return PerformCall(request, Method.POST);
         }
 
         public TReturn Execute<TReturn>(string uri, object obj)
