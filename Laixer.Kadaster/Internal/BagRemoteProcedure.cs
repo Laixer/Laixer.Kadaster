@@ -27,6 +27,14 @@ namespace Laixer.Kadaster.Internal
 
             // TODO: Handle response
 
+            //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            //{
+            //    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
+            //    {
+            //        throw new Exception("Max objecten reached");
+            //    }
+            //}
+
             return response.Content;
         }
 
@@ -67,6 +75,14 @@ namespace Laixer.Kadaster.Internal
             var response = client.Execute(request, Method.POST);
 
             // TODO: Handle response
+
+            //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+            //{
+            //    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
+            //    {
+            //        throw new Exception("Max objecten reached");
+            //    }
+            //}
 
             return response.Content;
         }

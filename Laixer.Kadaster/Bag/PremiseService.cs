@@ -15,24 +15,10 @@ namespace Laixer.Kadaster.Bag
             this.remoteProcedure = remoteProcedure;
         }
 
-        public class HalPremise : Premise
-        {
-            public class Embedding
-            {
-                public dynamic geometrie { get; set; }
-            }
-
-            [JsonProperty("_embedded")]
-            public Embedding Embedded { get; set; }
-
-            [JsonProperty("_links")]
-            public dynamic Links { get; set; }
-        }
-
-        public class PremiseList
+        private class PremiseList
         {
             [JsonProperty("panden")]
-            public IList<HalPremise> Premises { get; set; } = new List<HalPremise>();
+            public IList<Premise> Premises { get; set; } = new List<Premise>();
         }
 
         public override IEnumerable<BagObject<Premise>> GetAll(int limit = 0)
@@ -61,20 +47,7 @@ namespace Laixer.Kadaster.Bag
                     }
                 };
 
-                //var ttx = JsonConvert.SerializeObject(r);
-
-                System.Console.WriteLine($"page: {page}");
-
                 var data = remoteProcedure.Execute<ApplicationLanguage<PremiseList>>($"panden?page={page}", r);
-
-                //if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-                //{
-                //    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
-                //    {
-                //        throw new System.Exception("Max objecten reached");
-                //    }
-                //}
-
                 foreach (var item in data._embedded.Premises)
                 {
                     if (limit > 0 && limit == itemCounter)
@@ -95,16 +68,17 @@ namespace Laixer.Kadaster.Bag
             } while (true);
         }
 
-        private BagObject<Premise> ItemAsBagObject(HalPremise item)
+        private BagObject<Premise> ItemAsBagObject(Premise item)
         {
-            item.GeoJson = JsonConvert.SerializeObject(item.Embedded.geometrie);
-            if (item.oorspronkelijkBouwjaar > 2100)
+            item.GeoJson = JsonConvert.SerializeObject(item.Embed.Geometry);
+
+            if (item.BuiltYear > 2100)
             {
-                item.oorspronkelijkBouwjaar = null;
+                item.BuiltYear = null;
             }
-            else if (item.oorspronkelijkBouwjaar == 0)
+            else if (item.BuiltYear == 0)
             {
-                item.oorspronkelijkBouwjaar = null;
+                item.BuiltYear = null;
             }
 
             return new BagObject<Premise>
@@ -115,7 +89,7 @@ namespace Laixer.Kadaster.Bag
 
         public override BagObject<Premise> GetById(BagId id)
         {
-            return ItemAsBagObject(remoteProcedure.Query<HalPremise>($"panden/{id}"));
+            return ItemAsBagObject(remoteProcedure.Query<Premise>($"panden/{id}"));
         }
     }
 }

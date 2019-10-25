@@ -1,10 +1,39 @@
-﻿namespace Laixer.Kadaster.Entities
+﻿using Newtonsoft.Json;
+
+namespace Laixer.Kadaster.Entities
 {
+    public class PremiseResourceConnection
+    {
+        [JsonProperty("self")]
+        public ResourceConnection Self { get; set; }
+
+        [JsonProperty("voorkomens")]
+        public ResourceConnection Occurrence { get; set; }
+
+        [JsonProperty("verblijfsobjecten")]
+        public ResourceConnection ResidentialObject { get; set; }
+    }
+
+    /// <summary>
+    /// Premise entity.
+    /// </summary>
     public class Premise
     {
-        public string identificatiecode { get; set; }
-        public int? oorspronkelijkBouwjaar { get; set; }
-        public string status { get; set; }
+        [JsonProperty("identificatiecode")]
+        public string Id { get; set; }
+
+        [JsonProperty("oorspronkelijkBouwjaar")]
+        public int? BuiltYear { get; set; }
+
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
         public string GeoJson { get; set; }
+
+        [JsonProperty("_embedded")]
+        public EmbeddingGeometry Embed { get; set; }
+
+        [JsonProperty("_links")]
+        public PremiseResourceConnection Links { get; set; }
     }
 }

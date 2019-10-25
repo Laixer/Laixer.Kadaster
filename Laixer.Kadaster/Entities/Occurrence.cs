@@ -1,12 +1,25 @@
-﻿namespace Laixer.Kadaster.Entities
+﻿using Newtonsoft.Json;
+
+namespace Laixer.Kadaster.Entities
 {
     public class Occurrence
     {
-        public string beginGeldigheid { get; set; }
-        public string eindGeldigheid { get; set; }
-        public bool inOnderzoek { get; set; }
-        public bool aanduidingInactief { get; set; }
-        public int aanduidingCorrectie { get; set; }
-        public bool geconstateerd { get; set; }
+        [JsonProperty("beginGeldigheid")]
+        public string ValidFrom { get; set; }
+
+        [JsonProperty("eindGeldigheid")]
+        public string ValidTil { get; set; }
+
+        [JsonProperty("inOnderzoek")]
+        public bool UnderInvestigation { get; set; }
+
+        [JsonProperty("aanduidingInactief")]
+        public bool AppointmentActive { get; set; }
+
+        [JsonProperty("aanduidingCorrectie")]
+        public int AppointmentCorrection { get; set; }
+
+        [JsonProperty("geconstateerd")]
+        public bool Established { get; set; }
     }
 }

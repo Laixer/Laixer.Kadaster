@@ -1,4 +1,5 @@
 ﻿using Laixer.Kadaster.Entities;
+using Newtonsoft.Json;
 using RestSharp;
 using System.Collections.Generic;
 
@@ -6,68 +7,39 @@ namespace Laixer.Kadaster.Bag
 {
     public class DesignationService : IBagService<Designation>
     {
-        private readonly IRestClient _client;
+        private readonly IRemoteProcedure remoteProcedure;
 
-        public DesignationService(IRestClient client)
+        public DesignationService(IRestClient client, IRemoteProcedure remoteProcedure)
         {
-            _client = client;
+            this.remoteProcedure = remoteProcedure;
         }
 
-        public class MySource
+        private class DesignationList
         {
-            public Source bron { get; set; }
-        }
-
-        public class HalOccurrence : Occurrence
-        {
-            public MySource _embedded { get; set; }
-        }
-
-        public class HalDesignation : Designation
-        {
-            public class ValidOccurrence
-            {
-                public HalOccurrence geldigVoorkomen { get; set; }
-            }
-
-            public ValidOccurrence _embedded { get; set; }
-            public dynamic _links { get; set; }
-        }
-
-        public class DesignationList
-        {
-            public IList<HalDesignation> nummeraanduidingen { get; set; } = new List<HalDesignation>();
+            [JsonProperty("nummeraanduidingen")]
+            public IList<Designation> Designations { get; set; } = new List<Designation>();
         }
 
         public IEnumerable<BagObject<Designation>> GetAll(int limit = 0)
         {
             int page = 1;
+            int itemCount = 0;
 
             do
             {
-                var request = new RestRequest("nummeraanduidingen");
-                request.AddParameter("page", page);
-                System.Console.WriteLine($"page: {page}");
-
-                var response = _client.Get<ApplicationLanguage<DesignationList>>(request);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                var data = remoteProcedure.Query<ApplicationLanguage<DesignationList>>($"nummeraanduidingen?page={page}");
+                foreach (var item in data._embedded.Designations)
                 {
-                    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
+                    if (limit > 0 && itemCount == limit)
                     {
-                        throw new System.Exception("Max objecten reached");
+                        yield break;
                     }
+
+                    ++itemCount;
+                    yield return ItemAsBagObject(item);
                 }
 
-                foreach (var item in response.Data._embedded.nummeraanduidingen)
-                {
-                    yield return new BagObject<Designation>
-                    {
-                        Value = item as Designation
-                    };
-                }
-
-                if (response.Data._embedded.nummeraanduidingen.Count == 0)
+                if (data._embedded.Designations.Count == 0)
                 {
                     yield break;
                 }
@@ -76,58 +48,48 @@ namespace Laixer.Kadaster.Bag
             } while (true);
         }
 
-        public IEnumerable<BagObject<Designation>> GetAll(string postcode, int? houseNumber = null)
+        public IEnumerable<BagObject<Designation>> GetAll(string postcode, int? houseNumber = null, int limit = 0)
         {
             int page = 1;
+            int itemCount = 0;
 
             do
             {
-                var request = new RestRequest("nummeraanduidingen");
-                request.AddParameter("postcode", postcode);
-                if (houseNumber.HasValue)
-                {
-                    request.AddParameter("huisnummer", houseNumber);
-                }
-                request.AddParameter("page", page);
+                var data = remoteProcedure.Query<ApplicationLanguage<DesignationList>>(houseNumber != null
+                    ? $"nummeraanduidingen?postcode={postcode}&huisnummer={houseNumber}&page={page}"
+                    : $"nummeraanduidingen?postcode={postcode}&page={page}");
 
-                var response = _client.Get<ApplicationLanguage<DesignationList>>(request);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                foreach (var item in data._embedded.Designations)
                 {
-                    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
+                    if (limit > 0 && itemCount == limit)
                     {
-                        throw new System.Exception("Max objecten reached");
+                        yield break;
                     }
+
+                    ++itemCount;
+                    yield return ItemAsBagObject(item);
                 }
 
-                foreach (var item in response.Data._embedded.nummeraanduidingen)
-                {
-                    yield return new BagObject<Designation>
-                    {
-                        Value = item as Designation
-                    };
-                }
-
-                if (response.Data._embedded.nummeraanduidingen.Count == 0)
+                if (data._embedded.Designations.Count == 0)
                 {
                     yield break;
                 }
 
                 page++;
             } while (true);
+        }
+
+        private BagObject<Designation> ItemAsBagObject(Designation item)
+        {
+            return new BagObject<Designation>
+            {
+                Value = item
+            };
         }
 
         public BagObject<Designation> GetById(BagId id)
         {
-            var request = new RestRequest("nummeraanduidingen/{id}");
-            request.AddUrlSegment("id", id);
-
-            var response = _client.Get<Designation>(request);
-
-            return new BagObject<Designation>
-            {
-                Value = response.Data as Designation
-            };
+            return ItemAsBagObject(remoteProcedure.Query<Designation>($"nummeraanduidingen/{id}"));
         }
     }
 }

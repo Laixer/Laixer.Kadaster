@@ -2,6 +2,21 @@
 
 namespace Laixer.Kadaster.Entities
 {
+    public class DesignationResourceConnection
+    {
+        [JsonProperty("self")]
+        public ResourceConnection Self { get; set; }
+
+        [JsonProperty("bijbehorendeOpenbareRuimte")]
+        public ResourceConnection PublicSpace { get; set; }
+
+        [JsonProperty("voorkomens")]
+        public ResourceConnection Occurrence { get; set; }
+
+        [JsonProperty("adresseerbaarObject")]
+        public ResourceConnection AddressObject { get; set; }
+    }
+
     /// <summary>
     /// Designation entity.
     /// </summary>
@@ -25,6 +40,16 @@ namespace Laixer.Kadaster.Entities
         [JsonProperty("status")]
         public string Status { get; set; }
 
+        [JsonProperty("_embedded")]
+        public Embedding Embed { get; set; }
+
+        [JsonProperty("_links")]
+        public DesignationResourceConnection Links { get; set; }
+
+        /// <summary>
+        /// Represent as string.
+        /// </summary>
+        /// <returns>String representation.</returns>
         public override string ToString()
         {
             if (string.IsNullOrEmpty(HouseLetter))

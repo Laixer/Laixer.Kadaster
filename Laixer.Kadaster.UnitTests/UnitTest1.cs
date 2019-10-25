@@ -40,7 +40,7 @@ namespace Laixer.Kadaster.UnitTests
 
             //}
 
-            //await dservice.GetAllAsync(postcode: "3123EB", houseNumber: 43);
+            //await dservice.GetAll(postcode: "3123EB", houseNumber: 43);
             //dservice.GetById("0005200000035461");
             //await dservice.GetByIdAsync("0005200000035461").AddressObject();
             //await dservice.GetByIdAsync("0005200000035461").PublicSpace();

@@ -47,7 +47,7 @@ namespace Laixer.Kadaster
             switch (designation)
             {
                 case BagService.Designation:
-                    return new DesignationService(client);
+                    return new DesignationService(client, procInterface);
                 case BagService.Premise:
                     return new PremiseService(client, procInterface);
                 case BagService.ResidentialObject:
@@ -55,7 +55,7 @@ namespace Laixer.Kadaster
                 case BagService.City:
                     return new CityService(client);
                 case BagService.PublicSpace:
-                    return new PublicSpaceService(client);
+                    return new PublicSpaceService(client, procInterface);
                 default:
                     break;
             }

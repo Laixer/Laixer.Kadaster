@@ -6,53 +6,38 @@ namespace Laixer.Kadaster.Bag
 {
     public class PublicSpaceService : IBagService<PublicSpace>
     {
-        private readonly IRestClient _client;
+        private readonly IRemoteProcedure remoteProcedure;
 
-        public PublicSpaceService(IRestClient client)
+        public PublicSpaceService(IRestClient client, IRemoteProcedure remoteProcedure)
         {
-            _client = client;
+            this.remoteProcedure = remoteProcedure;
         }
 
-        public class HalPublicSpace : PublicSpace
+        private class PublicSpaceList
         {
-            public dynamic _embedded { get; set; }
-            public dynamic _links { get; set; }
-        }
-
-        public class PublicSpaceList
-        {
-            public IList<HalPublicSpace> nummeraanduidingen { get; set; } = new List<HalPublicSpace>();
+            public IList<PublicSpace> openbareRuimtes { get; set; } = new List<PublicSpace>();
         }
 
         public IEnumerable<BagObject<PublicSpace>> GetAll(int limit = 0)
         {
             int page = 1;
+            int itemCount = 0;
 
             do
             {
-                var request = new RestRequest("openbare-ruimtes");
-                request.AddParameter("page", page);
-                System.Console.WriteLine($"page: {page}");
-
-                var response = _client.Get<ApplicationLanguage<PublicSpaceList>>(request);
-
-                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                var data = remoteProcedure.Query<ApplicationLanguage<PublicSpaceList>>($"openbare-ruimtes?page={page}");
+                foreach (var item in data._embedded.openbareRuimtes)
                 {
-                    if (response.Content.Contains("CANNOT_RETURN_MORE_THAN_10000_RESULTS"))
+                    if (limit > 0 && itemCount == limit)
                     {
-                        throw new System.Exception("Max objecten reached");
+                        yield break;
                     }
+
+                    ++itemCount;
+                    yield return ItemAsBagObject(item);
                 }
 
-                foreach (var item in response.Data._embedded.nummeraanduidingen)
-                {
-                    yield return new BagObject<PublicSpace>
-                    {
-                        Value = item as PublicSpace
-                    };
-                }
-
-                if (response.Data._embedded.nummeraanduidingen.Count == 0)
+                if (data._embedded.openbareRuimtes.Count == 0)
                 {
                     yield break;
                 }
@@ -61,17 +46,17 @@ namespace Laixer.Kadaster.Bag
             } while (true);
         }
 
-        public BagObject<PublicSpace> GetById(BagId id)
+        private BagObject<PublicSpace> ItemAsBagObject(PublicSpace item)
         {
-            var request = new RestRequest("openbare-ruimtes/{id}");
-            request.AddUrlSegment("id", id);
-
-            var response = _client.Get<PublicSpace>(request);
-
             return new BagObject<PublicSpace>
             {
-                Value = response.Data as PublicSpace
+                Value = item
             };
+        }
+
+        public BagObject<PublicSpace> GetById(BagId id)
+        {
+            return ItemAsBagObject(remoteProcedure.Query<PublicSpace>($"openbare-ruimtes/{id}"));
         }
     }
 }
