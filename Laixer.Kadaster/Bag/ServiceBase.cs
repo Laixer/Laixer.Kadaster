@@ -39,5 +39,14 @@ namespace Laixer.Kadaster.Bag
         /// <param name="id">Entity identifier.</param>
         /// <returns>Instance of <see cref="BagObject{T}"/>.</returns>
         public BagObject<TEntity> GetById(string id) => GetById(new BagId(id));
+
+        protected virtual BagObject<TEntity> ItemAsBagObject(TEntity item)
+            => new BagObject<TEntity>
+            {
+                Value = item
+            };
+
+        protected virtual BagObject<TEntity> GetById(BagId id, string uri)
+            => ItemAsBagObject(_remoteProcedure.Query<TEntity>(uri));
     }
 }
