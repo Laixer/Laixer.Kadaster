@@ -54,8 +54,13 @@ namespace Laixer.Kadaster
             return cityService.GetById(new BagId(id));
         }
 
-#if _X
-        public static BagObject<City> ResidentialObject(this BagObject<Premise> bagObject, KadasterBag bag)
+        /// <summary>
+        /// Request designation from premise.
+        /// </summary>
+        /// <param name="bagObject">Entity to extend.</param>
+        /// <param name="bag">BAG registrar.</param>
+        /// <returns><see cref="BagObject<City>"/>.</returns>
+        public static BagObject<ResidentialObject> ResidentialObject(this BagObject<Premise> bagObject, KadasterBag bag)
         {
             if (bagObject == null)
             {
@@ -67,11 +72,10 @@ namespace Laixer.Kadaster
                 throw new ArgumentNullException(nameof(bag));
             }
 
-            var residentialObjectService = bag.ResidentialObject();
+            var residentialObjectService = bag.ResidentialObjectService();
             var uri = bagObject.Value.Links.ResidentialObject.Href;
             var id = uri.Segments[4]; // TODO: This may not always be true;
             return residentialObjectService.GetById(new BagId(id));
         }
-#endif
     }
 }

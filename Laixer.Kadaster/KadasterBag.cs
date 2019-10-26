@@ -54,13 +54,11 @@ namespace Laixer.Kadaster
                 case BagService.Premise:
                     return new PremiseService(procInterface);
                 case BagService.ResidentialObject:
-                    break;
+                    return new ResidentialObjectService(procInterface);
                 case BagService.City:
                     return new CityService(procInterface);
                 case BagService.PublicSpace:
                     return new PublicSpaceService(procInterface);
-                default:
-                    break;
             }
 
             throw new InvalidOperationException(nameof(designation));
