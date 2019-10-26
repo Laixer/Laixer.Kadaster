@@ -43,14 +43,31 @@ namespace Laixer.Kadaster.Internal
         protected string PerformCall(IRestRequest request, Method method)
         {
             var response = client.Execute(request, method);
-            if (response.IsSuccessful)
+            switch (response.ResponseStatus)
             {
-                return response.Content;
+                case ResponseStatus.Completed:
+                    if (response.IsSuccessful)
+                    {
+                        return response.Content;
+                    }
+
+                    if (!string.IsNullOrEmpty(response.Content))
+                    {
+                        // TODO: This is an assumption.
+                        var error = JsonSerialzer.DeserializeObject<ErrorMessage>(response.Content);
+
+                        throw new RemoteProcedureException($"Error: {error.code}; Message: {error.message}");
+                    }
+                    break;
+                case ResponseStatus.Error:
+                    throw new System.Exception(response.ErrorMessage);
+                case ResponseStatus.TimedOut:
+                    throw new System.Exception("Operation timeout");
+                case ResponseStatus.Aborted:
+                    break;
             }
 
-            var error = JsonSerialzer.DeserializeObject<ErrorMessage>(response.Content);
-
-            throw new RemoteProcedureException($"Error: {error.code}; Message: {error.message}");
+            throw new InvalidOperationException(); // TODO:
         }
 
         public string Query(string uri)
