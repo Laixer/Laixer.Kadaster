@@ -1,4 +1,5 @@
 ﻿using Laixer.Kadaster.Entities;
+using Laixer.Kadaster.Entities.Embed;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
@@ -50,7 +51,7 @@ namespace Laixer.Kadaster.Bag
                     }
                 };
 
-                var data = _remoteProcedure.Execute<ApplicationLanguage<PremiseList>>($"panden?page={page}", r);
+                var data = _remoteProcedure.Execute<EmbeddingEntity<PremiseList>>($"panden?page={page}", r);
                 foreach (var item in data.Embed.Premises)
                 {
                     if (limit > 0 && limit == itemCounter)
@@ -71,7 +72,7 @@ namespace Laixer.Kadaster.Bag
             } while (true);
         }
 
-        private BagObject<Premise> ItemAsBagObject(Premise item)
+        protected override BagObject<Premise> ItemAsBagObject(Premise item)
         {
             if (item.BuiltYear > 2100)
             {
@@ -82,10 +83,7 @@ namespace Laixer.Kadaster.Bag
                 item.BuiltYear = null;
             }
 
-            return new BagObject<Premise>
-            {
-                Value = item as Premise
-            };
+            return base.ItemAsBagObject(item);
         }
 
         /// <summary>
@@ -93,6 +91,6 @@ namespace Laixer.Kadaster.Bag
         /// </summary>
         /// <param name="id">Entity identifier.</param>
         /// <returns>Instance of <see cref="BagObject{T}"/>.</returns
-        public override BagObject<Premise> GetById(BagId id) => ItemAsBagObject(_remoteProcedure.Query<Premise>($"panden/{id}"));
+        public override BagObject<Premise> GetById(BagId id) => GetById(id, $"panden/{id}");
     }
 }

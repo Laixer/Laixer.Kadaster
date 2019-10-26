@@ -67,5 +67,20 @@ namespace Laixer.Kadaster
 
             return bag.GetService(BagService.PublicSpace) as PublicSpaceService;
         }
+
+        /// <summary>
+        /// Get bag residential object service.
+        /// </summary>
+        /// <param name="bag">Factory to extend.</param>
+        /// <returns>See <see cref="Bag.ResidentialObjectService"/>.</returns>
+        public static ResidentialObjectService ResidentialObjectService(this KadasterBag bag)
+        {
+            if (bag == null)
+            {
+                throw new ArgumentNullException(nameof(bag));
+            }
+
+            return bag.GetService(BagService.ResidentialObject) as ResidentialObjectService;
+        }
     }
 }

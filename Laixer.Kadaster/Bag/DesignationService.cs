@@ -1,4 +1,5 @@
 ﻿using Laixer.Kadaster.Entities;
+using Laixer.Kadaster.Entities.Embed;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
@@ -31,7 +32,7 @@ namespace Laixer.Kadaster.Bag
 
             do
             {
-                var data = _remoteProcedure.Query<ApplicationLanguage<DesignationList>>($"nummeraanduidingen?page={page}");
+                var data = _remoteProcedure.Query<EmbeddingEntity<DesignationList>>($"nummeraanduidingen?page={page}");
                 foreach (var item in data.Embed.Designations)
                 {
                     if (limit > 0 && itemCount == limit)
@@ -59,7 +60,7 @@ namespace Laixer.Kadaster.Bag
 
             do
             {
-                var data = _remoteProcedure.Query<ApplicationLanguage<DesignationList>>(houseNumber != null
+                var data = _remoteProcedure.Query<EmbeddingEntity<DesignationList>>(houseNumber != null
                     ? $"nummeraanduidingen?postcode={postcode}&huisnummer={houseNumber}&page={page}"
                     : $"nummeraanduidingen?postcode={postcode}&page={page}");
 
@@ -83,19 +84,11 @@ namespace Laixer.Kadaster.Bag
             } while (true);
         }
 
-        private BagObject<Designation> ItemAsBagObject(Designation item)
-        {
-            return new BagObject<Designation>
-            {
-                Value = item
-            };
-        }
-
         /// <summary>
         /// Return a singe entity of type <see cref="Designation"/>.
         /// </summary>
         /// <param name="id">Entity identifier.</param>
         /// <returns>Instance of <see cref="BagObject{T}"/>.</returns
-        public override BagObject<Designation> GetById(BagId id) => ItemAsBagObject(_remoteProcedure.Query<Designation>($"nummeraanduidingen/{id}"));
+        public override BagObject<Designation> GetById(BagId id) => GetById(id, $"nummeraanduidingen/{id}");
     }
 }

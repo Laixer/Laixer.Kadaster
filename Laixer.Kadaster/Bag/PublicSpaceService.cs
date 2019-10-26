@@ -1,4 +1,5 @@
 ﻿using Laixer.Kadaster.Entities;
+using Laixer.Kadaster.Entities.Embed;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
@@ -31,7 +32,7 @@ namespace Laixer.Kadaster.Bag
 
             do
             {
-                var data = _remoteProcedure.Query<ApplicationLanguage<PublicSpaceList>>($"openbare-ruimtes?page={page}");
+                var data = _remoteProcedure.Query<EmbeddingEntity<PublicSpaceList>>($"openbare-ruimtes?page={page}");
                 foreach (var item in data.Embed.PublicSpaces)
                 {
                     if (limit > 0 && itemCount == limit)
@@ -52,19 +53,11 @@ namespace Laixer.Kadaster.Bag
             } while (true);
         }
 
-        private BagObject<PublicSpace> ItemAsBagObject(PublicSpace item)
-        {
-            return new BagObject<PublicSpace>
-            {
-                Value = item
-            };
-        }
-
         /// <summary>
         /// Return a singe entity of type <see cref="PublicSpace"/>.
         /// </summary>
         /// <param name="id">Entity identifier.</param>
         /// <returns>Instance of <see cref="BagObject{T}"/>.</returns
-        public override BagObject<PublicSpace> GetById(BagId id) => ItemAsBagObject(_remoteProcedure.Query<PublicSpace>($"openbare-ruimtes/{id}"));
+        public override BagObject<PublicSpace> GetById(BagId id) => GetById(id, $"openbare-ruimtes/{id}");
     }
 }

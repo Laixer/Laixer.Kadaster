@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace Laixer.Kadaster
+namespace Laixer.Kadaster.Entities.Embed
 {
-    public class ApplicationLanguage<TEntity>
+    public class EmbeddingEntity<TEntity>
         where TEntity : class
     {
         [JsonProperty("_links")]
