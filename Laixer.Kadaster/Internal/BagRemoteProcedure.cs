@@ -59,10 +59,13 @@ namespace Laixer.Kadaster.Internal
                         throw new RemoteProcedureException($"Error: {error.code}; Message: {error.message}");
                     }
                     break;
+
                 case ResponseStatus.Error:
-                    throw new System.Exception(response.ErrorMessage);
+                    throw new RemoteProcedureException(response.ErrorMessage);
+
                 case ResponseStatus.TimedOut:
-                    throw new System.Exception("Operation timeout");
+                    throw new RemoteProcedureTimeoutException();
+
                 case ResponseStatus.Aborted:
                     break;
             }

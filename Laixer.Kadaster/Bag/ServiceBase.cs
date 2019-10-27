@@ -15,10 +15,7 @@ namespace Laixer.Kadaster.Bag
         /// Create new instance.
         /// </summary>
         /// <param name="remoteProcedure">Instance of <see cref="IRemoteProcedure"/>.</param>
-        public ServiceBase(IRemoteProcedure remoteProcedure)
-        {
-            _remoteProcedure = remoteProcedure;
-        }
+        public ServiceBase(IRemoteProcedure remoteProcedure) => _remoteProcedure = remoteProcedure;
 
         /// <summary>
         /// Return all instances of type <typeparamref name="TEntity"/>.
@@ -40,12 +37,22 @@ namespace Laixer.Kadaster.Bag
         /// <returns>Instance of <see cref="BagObject{T}"/>.</returns>
         public BagObject<TEntity> GetById(string id) => GetById(new BagId(id));
 
+        /// <summary>
+        /// Convert entity item to <see cref="BagObject{TEntity}"/>.
+        /// </summary>
+        /// <param name="item">Entity of type <typeparamref name="TEntity"/>.</param>
+        /// <returns><see cref="BagObject{TEntity}"/>.</returns>
         protected virtual BagObject<TEntity> ItemAsBagObject(TEntity item)
             => new BagObject<TEntity>
             {
                 Value = item
             };
 
+        /// <summary>
+        /// Return a singe entity of type <typeparamref name="TEntity"/>.
+        /// </summary>
+        /// <param name="id">Entity identifier.</param>
+        /// <returns>Instance of <see cref="BagObject{T}"/>.</returns>
         protected virtual BagObject<TEntity> GetById(BagId id, string uri)
             => ItemAsBagObject(_remoteProcedure.Query<TEntity>(uri));
     }
