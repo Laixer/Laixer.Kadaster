@@ -18,7 +18,7 @@ namespace Laixer.Kadaster.Internal
         }
 
         /// <summary>
-        /// Json serializer.
+        /// Json object serializer. See <see cref="IJsonSerialzer"/>.
         /// </summary>
         public IJsonSerialzer JsonSerialzer { get; set; }
 
@@ -67,12 +67,17 @@ namespace Laixer.Kadaster.Internal
                     throw new RemoteProcedureTimeoutException();
 
                 case ResponseStatus.Aborted:
-                    break;
+                    throw new RemoteProcedureOperationAbortedException();
             }
 
-            throw new InvalidOperationException(); // TODO:
+            throw new InvalidOperationException();
         }
 
+        /// <summary>
+        /// Perform query with result based on uri.
+        /// </summary>
+        /// <param name="uri">Request uri.</param>
+        /// <returns>Result as string, if any.</returns>
         public string Query(string uri)
         {
             if (string.IsNullOrEmpty(uri))
@@ -83,6 +88,12 @@ namespace Laixer.Kadaster.Internal
             return PerformCall(new RestRequest(uri), Method.GET);
         }
 
+        /// <summary>
+        /// Perform query with result based on uri.
+        /// </summary>
+        /// <typeparam name="TReturn">Return type.</typeparam>
+        /// <param name="uri">Request uri.</param>
+        /// <returns>Object of type <typeparamref name="TReturn"/>.</returns>
         public TReturn Query<TReturn>(string uri)
         {
             if (string.IsNullOrEmpty(uri))
@@ -98,6 +109,12 @@ namespace Laixer.Kadaster.Internal
             return JsonSerialzer.DeserializeObject<TReturn>(Query(uri));
         }
 
+        /// <summary>
+        /// Execute request and result result.
+        /// </summary>
+        /// <param name="uri">Request uri.</param>
+        /// <param name="obj">Object to submit.</param>
+        /// <returns>Result as string, if any.</returns>
         public string Execute(string uri, object obj)
         {
             if (string.IsNullOrEmpty(uri))
@@ -121,6 +138,13 @@ namespace Laixer.Kadaster.Internal
             return PerformCall(request, Method.POST);
         }
 
+        /// <summary>
+        /// Execute request and result result.
+        /// </summary>
+        /// <typeparam name="TReturn">Return type.</typeparam>
+        /// <param name="uri">Request uri.</param>
+        /// <param name="obj">Object to submit.</param>
+        /// <returns>Object of type <typeparamref name="TReturn"/>.</returns>
         public TReturn Execute<TReturn>(string uri, object obj)
         {
             if (string.IsNullOrEmpty(uri))
