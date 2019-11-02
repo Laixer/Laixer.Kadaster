@@ -1,6 +1,7 @@
 ﻿using Laixer.Kadaster.Entities;
 using Laixer.Kadaster.Entities.Embed;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Laixer.Kadaster.Bag
@@ -54,6 +55,7 @@ namespace Laixer.Kadaster.Bag
                 var data = _remoteProcedure.Execute<EmbeddingEntity<PremiseList>>($"panden?page={page}", r);
                 foreach (var item in data.Embed.Premises)
                 {
+                    // Return from enumerable when limit is set and reached.
                     if (limit > 0 && limit == itemCounter)
                     {
                         yield break;
@@ -68,12 +70,19 @@ namespace Laixer.Kadaster.Bag
                     yield break;
                 }
 
+                // TODO: Only continue when more data is available
+
                 page++;
             } while (true);
         }
 
         protected override BagObject<Premise> ItemAsBagObject(Premise item)
         {
+            if (item == null)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
             if (item.BuiltYear > 2100)
             {
                 item.BuiltYear = null;
