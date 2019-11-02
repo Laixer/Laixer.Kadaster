@@ -35,6 +35,7 @@ namespace Laixer.Kadaster.Bag
                 var data = _remoteProcedure.Query<EmbeddingEntity<DesignationList>>($"nummeraanduidingen?page={page}");
                 foreach (var item in data.Embed.Designations)
                 {
+                    // Return from enumerable when limit is set and reached.
                     if (limit > 0 && itemCount == limit)
                     {
                         yield break;
@@ -48,6 +49,8 @@ namespace Laixer.Kadaster.Bag
                 {
                     yield break;
                 }
+
+                // TODO: Only continue when more data is available
 
                 page++;
             } while (true);
@@ -66,6 +69,7 @@ namespace Laixer.Kadaster.Bag
 
                 foreach (var item in data.Embed.Designations)
                 {
+                    // Return from enumerable when limit is set and reached.
                     if (limit > 0 && itemCount == limit)
                     {
                         yield break;
@@ -79,6 +83,8 @@ namespace Laixer.Kadaster.Bag
                 {
                     yield break;
                 }
+
+                // TODO: Only continue when more data is available
 
                 page++;
             } while (true);
