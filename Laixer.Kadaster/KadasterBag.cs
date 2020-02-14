@@ -45,23 +45,14 @@ namespace Laixer.Kadaster
         /// </summary>
         /// <param name="designation"></param>
         /// <returns>Instance of <see cref="IBagService"/>.</returns>
-        public IBagService GetService(BagService designation)
+        public IBagService GetService(BagService designation) => designation switch
         {
-            switch (designation)
-            {
-                case BagService.Designation:
-                    return new DesignationService(procInterface);
-                case BagService.Premise:
-                    return new PremiseService(procInterface);
-                case BagService.ResidentialObject:
-                    return new ResidentialObjectService(procInterface);
-                case BagService.City:
-                    return new CityService(procInterface);
-                case BagService.PublicSpace:
-                    return new PublicSpaceService(procInterface);
-            }
-
-            throw new InvalidOperationException(nameof(designation));
-        }
+            BagService.Designation => new DesignationService(procInterface),
+            BagService.Premise => new PremiseService(procInterface),
+            BagService.ResidentialObject => new ResidentialObjectService(procInterface),
+            BagService.City => new CityService(procInterface),
+            BagService.PublicSpace => new PublicSpaceService(procInterface),
+            _ => throw new InvalidOperationException(nameof(designation)),
+        };
     }
 }

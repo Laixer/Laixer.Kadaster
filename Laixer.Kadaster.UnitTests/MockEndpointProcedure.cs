@@ -45,9 +45,9 @@ namespace Laixer.Kadaster.UnitTests
         private string HandleUri(string uri, object obj = null)
         {
             var fakeEndpoint = new Uri(BaseUrl + uri);
-            switch (fakeEndpoint.Segments[1].Replace("/", null, StringComparison.OrdinalIgnoreCase).Trim().ToLower())
+            switch (fakeEndpoint.Segments[1].Replace("/", null, StringComparison.OrdinalIgnoreCase).Trim().ToUpperInvariant())
             {
-                case "panden":
+                case "PANDEN":
                     {
                         if (fakeEndpoint.Segments.Length > 2)
                         {
@@ -66,16 +66,16 @@ namespace Laixer.Kadaster.UnitTests
                         return JsonConvert.SerializeObject(embed);
                     }
 
-                case "verblijfsobjecten":
+                case "VERBLIJFSOBJECTEN":
                     break;
 
-                case "openbare-ruimtes":
+                case "OPENBARE-RUIMTES":
                     break;
 
-                case "nummeraanduidingen":
+                case "NUMMERAANDUIDINGEN":
                     break;
 
-                case "woonplaatsen":
+                case "WOONPLAATSEN":
                     break;
 
                 default:

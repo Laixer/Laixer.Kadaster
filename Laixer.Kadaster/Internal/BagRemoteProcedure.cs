@@ -103,7 +103,7 @@ namespace Laixer.Kadaster.Internal
 
             if (JsonSerialzer == null)
             {
-                throw new NullReferenceException(nameof(JsonSerialzer));
+                throw new NotImplementedException(nameof(JsonSerialzer));
             }
 
             return JsonSerialzer.DeserializeObject<TReturn>(Query(uri));
@@ -129,7 +129,7 @@ namespace Laixer.Kadaster.Internal
 
             if (JsonSerialzer == null)
             {
-                throw new NullReferenceException(nameof(JsonSerialzer));
+                throw new NotImplementedException(nameof(JsonSerialzer));
             }
 
             var request = new RestRequest(uri);
@@ -159,7 +159,7 @@ namespace Laixer.Kadaster.Internal
 
             if (JsonSerialzer == null)
             {
-                throw new NullReferenceException(nameof(JsonSerialzer));
+                throw new NotImplementedException(nameof(JsonSerialzer));
             }
 
             return JsonSerialzer.DeserializeObject<TReturn>(Execute(uri, obj));
