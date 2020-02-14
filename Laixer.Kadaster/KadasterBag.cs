@@ -43,6 +43,9 @@ namespace Laixer.Kadaster
         /// <summary>
         /// Return a service available in this registration.
         /// </summary>
+        /// <remarks>
+        /// This is an internal factory to redirect a specific call to a remote BAG service.
+        /// </remarks>
         /// <param name="designation"></param>
         /// <returns>Instance of <see cref="IBagService"/>.</returns>
         public IBagService GetService(BagService designation) => designation switch

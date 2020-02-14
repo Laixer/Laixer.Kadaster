@@ -77,7 +77,7 @@ namespace Laixer.Kadaster.UnitTests
             // Act & Assert
             foreach (var item in pservice.GetAll())
             {
-                if (item.Value.Embed.Geometry.Type.ToLower() == "polygon")
+                if (item.Value.Embed.Geometry.Type.ToUpperInvariant() == "POLYGON")
                 {
                     var polyStart = item.Value.Embed.Geometry.Coordination.First().First();
                     var polyEnd = item.Value.Embed.Geometry.Coordination.First().Last();
